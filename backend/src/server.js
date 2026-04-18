@@ -1,31 +1,24 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const { initDb } = require('./db/database');
 
 const app = express();
-const isProd = process.env.NODE_ENV === 'production';
 
-app.use(cors({
-  origin: isProd ? false : 'http://localhost:5173',
-  credentials: true,
-}));
+// CORS_ORIGIN can be a comma-separated list of allowed origins
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map(o => o.trim());
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
 initDb();
 
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth',        require('./routes/auth'));
 app.use('/api/departments', require('./routes/departments'));
-app.use('/api/employees', require('./routes/employees').router);
-app.use('/api/leaves', require('./routes/leaves'));
-
-// Serve React build in production
-if (isProd) {
-  const clientDist = path.join(__dirname, '../../frontend/dist');
-  app.use(express.static(clientDist));
-  app.get('*', (req, res) => res.sendFile(path.join(clientDist, 'index.html')));
-}
+app.use('/api/employees',   require('./routes/employees').router);
+app.use('/api/leaves',      require('./routes/leaves'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
