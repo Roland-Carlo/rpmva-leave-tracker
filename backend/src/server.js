@@ -4,8 +4,6 @@ const cors = require('cors');
 const { initDb } = require('./db/database');
 
 const app = express();
-
-// CORS_ORIGIN can be a comma-separated list of allowed origins
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .split(',')
   .map(o => o.trim());

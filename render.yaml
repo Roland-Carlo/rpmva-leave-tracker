@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: leave-tracker-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false
+      - key: DB_PATH
+        value: /data/leave_tracker.db
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1
