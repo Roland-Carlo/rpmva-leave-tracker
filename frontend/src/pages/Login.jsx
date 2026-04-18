@@ -83,23 +83,6 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-brand-slate/20">
-            <p className="text-xs text-brand-slate font-semibold mb-3 uppercase tracking-wide">Demo Credentials</p>
-            <div className="space-y-2 text-xs text-gray-600">
-              <div className="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-2.5">
-                <span className="font-bold text-brand-black">Admin</span>
-                <span className="text-gray-500">admin@company.com / admin123</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-2.5">
-                <span className="font-bold text-brand-black">HR</span>
-                <span className="text-gray-500">hr@company.com / hr1234</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-2.5">
-                <span className="font-bold text-brand-black">Employee</span>
-                <span className="text-gray-500">pat.silva@company.com / password123</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
