@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inactivity = searchParams.get('reason') === 'inactivity';
+
   const [form, setForm] = useState({ email: sessionStorage.getItem('login_email') || '', password: '' });
   const [error, setError] = useState(() => sessionStorage.getItem('login_error') || '');
   const [loading, setLoading] = useState(false);
@@ -31,20 +34,24 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-brand-asphalt flex items-center justify-center p-4">
-      {/* Yellow accent bar at top */}
       <div className="fixed top-0 inset-x-0 h-1 bg-brand-yellow" />
 
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-yellow rounded-2xl shadow-lg mb-4">
             <span className="text-brand-black font-bold text-xl">LT</span>
           </div>
           <h1 className="text-2xl font-bold text-brand-white">Leave Tracker</h1>
-          <p className="text-brand-slate mt-1 text-sm">Sign in to your account</p>
+          <p className="text-brand-slate mt-1 text-sm">Log in to your account</p>
         </div>
 
         <div className="bg-brand-white rounded-2xl shadow-2xl p-8">
+          {inactivity && !error && (
+            <div className="mb-5 px-4 py-3 bg-brand-glow text-brand-asphalt text-sm font-medium rounded-xl border border-brand-beacon">
+              You were logged out due to inactivity. Please log in again.
+            </div>
+          )}
+
           {error && (
             <div className="mb-5 px-4 py-4 bg-red-600 rounded-xl text-white text-sm font-semibold flex items-center gap-3 shadow-lg animate-shake">
               <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -79,10 +86,9 @@ export default function Login() {
               />
             </div>
             <button type="submit" className="btn-primary w-full py-3 text-base" disabled={loading}>
-              {loading ? 'Signing in…' : 'Sign In'}
+              {loading ? 'Logging in…' : 'Log In'}
             </button>
           </form>
-
         </div>
       </div>
     </div>

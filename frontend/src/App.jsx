@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -21,22 +22,22 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       <Route path="/apply" element={
-        <ProtectedRoute>
+        <ProtectedRoute roles={['employee']}>
           <Layout><LeaveApplication /></Layout>
         </ProtectedRoute>
       } />
       <Route path="/my-leaves" element={
-        <ProtectedRoute>
+        <ProtectedRoute roles={['employee']}>
           <Layout><MyLeaves /></Layout>
         </ProtectedRoute>
       } />
       <Route path="/approvals" element={
-        <ProtectedRoute roles={['admin', 'hr']}>
+        <ProtectedRoute roles={['admin', 'supervisor']}>
           <Layout><Approvals /></Layout>
         </ProtectedRoute>
       } />
       <Route path="/employees" element={
-        <ProtectedRoute roles={['admin', 'hr']}>
+        <ProtectedRoute roles={['admin', 'supervisor']}>
           <Layout><Employees /></Layout>
         </ProtectedRoute>
       } />
@@ -54,7 +55,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );

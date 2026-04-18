@@ -12,9 +12,5 @@ services:
         generateValue: true
       - key: CORS_ORIGIN
         sync: false
-      - key: DB_PATH
-        value: /data/leave_tracker.db
-    disk:
-      name: sqlite-data
-      mountPath: /data
-      sizeGB: 1
+      - key: DATABASE_URL
+        sync: false

@@ -27,7 +27,19 @@
   .label {
     @apply block text-sm font-medium text-brand-black mb-1;
   }
-  .badge-pending  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-glow  text-brand-asphalt; }
-  .badge-approved { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100  text-green-800; }
-  .badge-rejected { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100    text-red-800; }
+  .badge-pending   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-glow    text-brand-asphalt; }
+  .badge-approved  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100    text-green-800; }
+  .badge-rejected  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100      text-red-800; }
+  .badge-returned  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100    text-amber-800; }
+  .badge-cancelled { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100     text-gray-500; }
+}
+
+@layer utilities {
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.2s ease-out;
+  }
 }

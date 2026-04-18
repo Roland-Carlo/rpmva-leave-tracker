@@ -4,12 +4,12 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../api/client';
 
 const navItems = [
-  { path: '/dashboard',    label: 'Dashboard',     icon: HomeIcon,     roles: ['admin','hr','employee'] },
-  { path: '/apply',        label: 'Apply Leave',   icon: PlusIcon,     roles: ['employee'] },
-  { path: '/my-leaves',    label: 'My Leaves',     icon: CalendarIcon, roles: ['employee'] },
-  { path: '/approvals',    label: 'Approvals',     icon: CheckIcon,    roles: ['admin','hr'] },
-  { path: '/employees',    label: 'Employees',     icon: UsersIcon,    roles: ['admin','hr'] },
-  { path: '/departments',  label: 'Departments',   icon: BuildingIcon, roles: ['admin'] },
+  { path: '/dashboard',   label: 'Dashboard',   icon: HomeIcon,     roles: ['admin','supervisor','employee'] },
+  { path: '/apply',       label: 'Apply Leave',  icon: PlusIcon,     roles: ['employee'] },
+  { path: '/my-leaves',   label: 'My Leaves',    icon: CalendarIcon, roles: ['employee'] },
+  { path: '/approvals',   label: 'Approvals',    icon: CheckIcon,    roles: ['admin','supervisor'] },
+  { path: '/employees',   label: 'Employees',    icon: UsersIcon,    roles: ['admin','supervisor'] },
+  { path: '/departments', label: 'Departments',  icon: BuildingIcon, roles: ['admin'] },
 ];
 
 export default function Layout({ children }) {
@@ -21,7 +21,7 @@ export default function Layout({ children }) {
   const [confirmLogout, setConfirmLogout] = useState(false);
 
   useEffect(() => {
-    if (user?.role !== 'employee') {
+    if (user?.role === 'admin' || user?.role === 'supervisor') {
       api.get('/leaves/pending-count').then(r => setPendingCount(r.data.count)).catch(() => {});
     }
   }, [user, location.pathname]);
@@ -30,11 +30,11 @@ export default function Layout({ children }) {
     logout();
     navigate('/login');
   };
+
   const filtered = navItems.filter(n => n.roles.includes(user?.role));
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Logo */}
       <div className="px-6 py-5 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-brand-yellow rounded-lg flex items-center justify-center shrink-0">
@@ -47,7 +47,6 @@ export default function Layout({ children }) {
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {filtered.map(item => {
           const active = location.pathname === item.path;
@@ -74,7 +73,6 @@ export default function Layout({ children }) {
         })}
       </nav>
 
-      {/* User footer */}
       <div className="px-3 py-4 border-t border-white/10">
         <div className="px-3 py-2 mb-1">
           <p className="text-brand-white text-sm font-semibold truncate">{user?.name}</p>
@@ -86,7 +84,7 @@ export default function Layout({ children }) {
           className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-brand-slate hover:bg-white/10 hover:text-brand-white transition-colors"
         >
           <LogoutIcon className="w-4 h-4" />
-          Sign Out
+          Log Out
         </button>
       </div>
     </div>
@@ -94,24 +92,19 @@ export default function Layout({ children }) {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-20 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Sidebar – mobile */}
       <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-brand-asphalt transform transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <SidebarContent />
       </aside>
 
-      {/* Sidebar – desktop */}
       <aside className="hidden lg:flex lg:flex-col w-64 bg-brand-asphalt shrink-0">
         <SidebarContent />
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Topbar */}
         <header className="bg-brand-white border-b border-brand-slate/30 px-4 py-3 flex items-center gap-4 shrink-0">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg hover:bg-gray-100">
             <MenuIcon className="w-5 h-5 text-brand-black" />
@@ -137,23 +130,13 @@ export default function Layout({ children }) {
                 <LogoutIcon className="w-5 h-5 text-brand-asphalt" />
               </div>
               <div>
-                <p className="font-bold text-brand-black text-base">Sign out?</p>
-                <p className="text-sm text-brand-slate mt-0.5">You'll need to sign in again to access your account.</p>
+                <p className="font-bold text-brand-black text-base">Log out?</p>
+                <p className="text-sm text-brand-slate mt-0.5">You'll need to log in again to access your account.</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => setConfirmLogout(false)}
-                className="btn-secondary flex-1"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleLogout}
-                className="btn-primary flex-1"
-              >
-                Sign Out
-              </button>
+              <button onClick={() => setConfirmLogout(false)} className="btn-secondary flex-1">Cancel</button>
+              <button onClick={handleLogout} className="btn-primary flex-1">Log Out</button>
             </div>
           </div>
         </div>
@@ -162,7 +145,6 @@ export default function Layout({ children }) {
   );
 }
 
-// Icons
 function HomeIcon({ className }) {
   return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
 }

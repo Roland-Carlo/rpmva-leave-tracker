@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 
 const LEAVE_TYPES = ['Annual Leave', 'Sick Leave'];
@@ -8,7 +9,7 @@ const LEAVE_TYPES = ['Annual Leave', 'Sick Leave'];
 export default function LeaveApplication() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [employees, setEmployees] = useState([]);
+  const { addToast } = useToast();
   const [balance, setBalance] = useState(null);
   const [form, setForm] = useState({
     employee_id: user.employeeId || '',
@@ -20,12 +21,6 @@ export default function LeaveApplication() {
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (user.role !== 'employee') {
-      api.get('/employees').then(r => setEmployees(r.data));
-    }
-  }, [user.role]);
 
   useEffect(() => {
     const empId = form.employee_id || user.employeeId;
@@ -56,12 +51,17 @@ export default function LeaveApplication() {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
+    if (!form.start_date || !form.end_date) {
+      setError('Please select start and end dates');
+      return;
+    }
     setSubmitting(true);
     try {
       await api.post('/leaves', {
         ...form,
         employee_id: form.employee_id || user.employeeId,
       });
+      addToast('Leave application submitted successfully.', 'success');
       navigate('/my-leaves');
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to submit application');
@@ -79,7 +79,6 @@ export default function LeaveApplication() {
         <p className="text-sm text-gray-500 mt-0.5">Submit a new leave application</p>
       </div>
 
-      {/* Balance summary — per selected leave type */}
       {typeBalance && (
         <div>
           <p className="text-xs font-semibold text-brand-asphalt uppercase tracking-wide mb-2">{form.leave_type} Balance</p>
@@ -108,23 +107,6 @@ export default function LeaveApplication() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {user.role !== 'employee' && (
-            <div>
-              <label className="label">Employee</label>
-              <select
-                className="input"
-                value={form.employee_id}
-                onChange={e => setForm(f => ({ ...f, employee_id: e.target.value }))}
-                required
-              >
-                <option value="">Select employee…</option>
-                {employees.map(e => (
-                  <option key={e.id} value={e.id}>{e.name} – {e.department_name}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
           <div>
             <label className="label">Leave Type</label>
             <div className="grid grid-cols-2 gap-3">

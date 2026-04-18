@@ -72,10 +72,12 @@ export default function Dashboard() {
 
   if (loading) return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-yellow" /></div>;
 
+  const firstName = user.name?.split(' ')[0] || user.email?.split('@')[0];
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-brand-black">Welcome back, {user.name?.split(' ')[0] || user.email?.split('@')[0]}!</h2>
+        <h2 className="text-xl font-semibold text-brand-black">Welcome back, {firstName}!</h2>
         <p className="text-sm text-brand-slate mt-0.5">{format(new Date(), 'EEEE, MMMM d, yyyy')} · FY {year}</p>
       </div>
 
@@ -88,12 +90,14 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent leave applications — employee view */}
+        {/* Recent leave applications — employee/supervisor view */}
         {user.employeeId && (
           <div className="card">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-brand-black">Recent Applications</h3>
-              <Link to="/my-leaves" className="text-sm text-brand-asphalt hover:text-brand-black font-medium underline underline-offset-2">View all</Link>
+              {user.role === 'employee' && (
+                <Link to="/my-leaves" className="text-sm text-brand-asphalt hover:text-brand-black font-medium underline underline-offset-2">View all</Link>
+              )}
             </div>
             {leaves.length === 0 ? (
               <div className="text-center py-8">
@@ -120,11 +124,13 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Admin/HR: employee leave snapshot */}
+        {/* Admin/Supervisor: employee leave snapshot */}
         {user.role !== 'employee' && employees.length > 0 && (
           <div className="card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-brand-black">Employee Balances</h3>
+              <h3 className="font-semibold text-brand-black">
+                {user.role === 'supervisor' ? 'My Team Balances' : 'Employee Balances'}
+              </h3>
               <Link to="/employees" className="text-sm text-brand-asphalt hover:text-brand-black font-medium underline underline-offset-2">View all</Link>
             </div>
             <div className="space-y-2">
@@ -159,12 +165,14 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Quick stats for admin/hr */}
+      {/* Quick stats for admin/supervisor */}
       {user.role !== 'employee' && (
         <div className="grid grid-cols-3 gap-4">
           <div className="card text-center">
             <p className="text-2xl font-bold text-brand-black">{stats.total}</p>
-            <p className="text-xs text-brand-slate mt-1">Total Applications ({year})</p>
+            <p className="text-xs text-brand-slate mt-1">
+              {user.role === 'supervisor' ? 'Team Applications' : 'Total Applications'} ({year})
+            </p>
           </div>
           <div className="card text-center">
             <p className="text-2xl font-bold text-brand-yellow">{stats.pending}</p>
